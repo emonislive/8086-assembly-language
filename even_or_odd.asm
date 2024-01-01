@@ -1,0 +1,65 @@
+ORG 100H
+.MODEL SMALL
+.STACK 100H
+.DATA
+    MSG1 DB "ENTER A NUMBER (OR 'N' TO EXIT) $"
+    MSG2 DB "THE NUMBER IS EVEN $"
+    MSG3 DB "THE NUMBER IS ODD $"
+    NEWLINE DB 0DH, 0AH, "$"
+    CHAR DB ?
+    VAR1 DB ?
+    REMAINDER DB ?
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX    
+
+    MOV AH, 9        ; MESSAGE 1 PRINT
+    LEA DX, MSG1
+    INT 21H
+    
+    MOV AH, 1        ; INPUT
+    INT 21H
+    
+    MOV CHAR, AL     ; CHAR INPUT CHECK
+    
+    SUB AL, 30H
+    MOV VAR1, AL
+    
+    CMP CHAR, 'N'
+    JE PROGRAM_END
+     
+    MOV AH, 9        ; NEWLINE
+    LEA DX, NEWLINE
+    INT 21H
+    
+    XOR AH, AH
+    
+    MOV AL, VAR1     ; DIVISION FOR EVEN OR ODD
+    MOV BL, 2
+    DIV BL
+    
+    MOV REMAINDER, AH
+    
+    CMP REMAINDER, 0
+    JE EVEN
+    JA ODD
+    
+    EVEN:
+    MOV AH, 9        ; MESSAGE 2 PRINT
+    LEA DX, MSG2
+    INT 21H
+    RET
+    
+    ODD:
+    MOV AH, 9        ; MESSAGE 3 PRINT
+    LEA DX, MSG3
+    INT 21H
+    RET
+    
+    PROGRAM_END:     ; CLOSE THE PROGRAM
+    MOV AH, 4CH
+    INT 21H
+    
+MAIN ENDP
+END MAIN
